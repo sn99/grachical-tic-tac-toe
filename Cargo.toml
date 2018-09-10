@@ -1,0 +1,6 @@
+[package]
+name =" graphical-tic-tac-toe"
+version = '0.1.0'
+authors = ["sn99"]
+
+[dependencies]
