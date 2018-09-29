@@ -3,8 +3,7 @@ extern crate ggez;
 use ggez::*;
 use ggez::graphics::{self, DrawMode, Point2};
 use ggez::event::MouseButton;
-
-//TODO optimizations and error handling
+use ggez::conf::{WindowMode, WindowSetup};
 
 #[derive(Clone)]
 struct Cell {
@@ -38,16 +37,19 @@ fn winner_declare(winner: i32, ctx: &mut Context) -> GameResult<()> {
     graphics::draw(ctx, &exit_image, point(150, 50), 0.0).unwrap();
     graphics::present(ctx);
 
-
     std::thread::sleep(std::time::Duration::from_secs(1));
 
-    ctx.quit();
+    if let Err(e) = ctx.quit() {
+        println!("Error '{}' occurred in exiting from winner_declare", e);
+    }
 
     Ok(())
 }
 
 fn check(value: &MainState, ctx: &mut Context) {
     let grid = &value.grid_values;
+
+    let mut check = true;
 
     // check for horizontal
     for row in grid {
@@ -66,9 +68,11 @@ fn check(value: &MainState, ctx: &mut Context) {
             }
         }
         if player_one == 3 {
-            winner_declare(1, ctx);
+            check = false;
+            winner_declare(1, ctx).unwrap();
         } else if player_two == 3 {
-            winner_declare(2, ctx);
+            check = false;
+            winner_declare(2, ctx).unwrap();
         } else {
             continue;
         }
@@ -91,9 +95,11 @@ fn check(value: &MainState, ctx: &mut Context) {
             }
         }
         if player_one == 3 {
-            winner_declare(1, ctx);
+            check = false;
+            winner_declare(1, ctx).unwrap();
         } else if player_two == 3 {
-            winner_declare(2, ctx);
+            check = false;
+            winner_declare(2, ctx).unwrap();
         } else {
             continue;
         }
@@ -101,23 +107,27 @@ fn check(value: &MainState, ctx: &mut Context) {
 
     // check for diagonals
     if grid[0][0].option == Some(true) && grid[1][1].option == Some(true) && grid[2][2].option == Some(true) {
-        winner_declare(1, ctx);
+        check = false;
+        winner_declare(1, ctx).unwrap();
     }
     if grid[0][0].option == Some(false) && grid[1][1].option == Some(false) && grid[2][2].option == Some(false) {
-        winner_declare(2, ctx);
+        check = false;
+        winner_declare(2, ctx).unwrap();
     }
 
     // check for draw
-    let mut draw_check = 0;
-    for row in grid {
-        for column in row {
-            if column.option != None {
-                draw_check += 1;
+    if check {
+        let mut draw_check = 0;
+        for row in grid {
+            for column in row {
+                if column.option != None {
+                    draw_check += 1;
+                }
             }
         }
-    }
-    if draw_check == 9 {
-        winner_declare(9, ctx);
+        if draw_check == 9 {
+            winner_declare(9, ctx).unwrap();
+        }
     }
 }
 
@@ -180,52 +190,84 @@ impl event::EventHandler for MainState {
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, ctx: &mut Context, _button: MouseButton, x: i32, y: i32) {
+    fn mouse_button_down_event(&mut self, _ctx: &mut Context, _button: MouseButton, x: i32, y: i32) {
         if y < 200 {
             let y = 100;
             if x < 300 {
                 let x = 200;
-                self.grid_values[0][0].make(x, y, self.state);
+                if self.grid_values[0][0].option == None {
+                    self.grid_values[0][0].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else if x <= 500 && x >= 300 {
                 let x = 400;
-                self.grid_values[0][1].make(x, y, self.state);
+                if self.grid_values[0][1].option == None {
+                    self.grid_values[0][1].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else {
                 let x = 600;
-                self.grid_values[0][2].make(x, y, self.state);
+                if self.grid_values[0][2].option == None {
+                    self.grid_values[0][2].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             }
         } else if y >= 200 && y <= 400 {
             let y = 300;
             if x < 300 {
                 let x = 200;
-                self.grid_values[1][0].make(x, y, self.state);
+                if self.grid_values[1][0].option == None {
+                    self.grid_values[1][0].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else if x <= 500 && x >= 300 {
                 let x = 400;
-                self.grid_values[1][1].make(x, y, self.state);
+                if self.grid_values[1][1].option == None {
+                    self.grid_values[1][1].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else {
                 let x = 600;
-                self.grid_values[1][2].make(x, y, self.state);
+                if self.grid_values[1][2].option == None {
+                    self.grid_values[1][2].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             }
         } else {
             let y = 500;
             if x < 300 {
                 let x = 200;
-                self.grid_values[2][0].make(x, y, self.state);
+                if self.grid_values[2][0].option == None {
+                    self.grid_values[2][0].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else if x <= 500 && x >= 300 {
                 let x = 400;
-                self.grid_values[2][1].make(x, y, self.state);
+                if self.grid_values[2][1].option == None {
+                    self.grid_values[2][1].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             } else {
                 let x = 600;
-                self.grid_values[2][2].make(x, y, self.state);
+                if self.grid_values[2][2].option == None {
+                    self.grid_values[2][2].make(x, y, self.state);
+                    self.state = !self.state;
+                }
             }
         }
-        self.state = !self.state;
     }
 }
 
 fn main() {
-    let c = conf::Conf::new();
-
-    let ctx = &mut Context::load_from_conf("tic-tac-toe", "sn99", c).unwrap();
+    let ctx = &mut ContextBuilder::new("tic-tac-toe", "sn99")
+        .window_setup(
+            WindowSetup::default()
+                .title("Tic Tac Toe")
+                .resizable(false),
+        )
+        .window_mode(WindowMode::default())
+        .build()
+        .unwrap();
 
     if let Ok(manifest_fir) = std::env::var("CARGO_MANIFEST_DIR") {
         let mut path = std::path::PathBuf::from(manifest_fir);
