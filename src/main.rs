@@ -25,131 +25,124 @@ impl Cell {
     }
 }
 
-fn winner_declare(winner: i32, ctx: &mut Context) -> GameResult<()> {
-    if winner == 1 || winner == 2 {
-        println!("Winner is player {}", winner);
-    } else {
-        println!("It is a draw");
-    }
-
-    let exit_image = graphics::Image::new(ctx, "/game_over.png")?;
-
-    graphics::draw(ctx, &exit_image, point(150, 50), 0.0).unwrap();
-    graphics::present(ctx);
-
-    std::thread::sleep(std::time::Duration::from_secs(1));
-
-    if let Err(e) = ctx.quit() {
-        println!("Error '{}' occurred in exiting from winner_declare", e);
-    }
-
-    Ok(())
-}
-
-fn check(value: &MainState, ctx: &mut Context) {
-    let grid = &value.grid_values;
-
-    let mut check = true;
-
-    // check for horizontal
-    for row in grid {
-        let mut player_one = 0;
-        let mut player_two = 0;
-        for column in row {
-            match column.option {
-                Some(t) => {
-                    if t {
-                        player_one += 1;
-                    } else {
-                        player_two += 1;
-                    }
-                }
-                None => continue,
-            }
-        }
-        if player_one == 3 {
-            check = false;
-            winner_declare(1, ctx).unwrap();
-        } else if player_two == 3 {
-            check = false;
-            winner_declare(2, ctx).unwrap();
-        } else {
-            continue;
-        }
-    }
-
-    // check for vertical
-    for i in 0..3 {
-        let mut player_one = 0;
-        let mut player_two = 0;
-        for j in 0..3 {
-            match grid[j][i].option {
-                Some(t) => {
-                    if t {
-                        player_one += 1;
-                    } else {
-                        player_two += 1;
-                    }
-                }
-                None => continue,
-            }
-        }
-        if player_one == 3 {
-            check = false;
-            winner_declare(1, ctx).unwrap();
-        } else if player_two == 3 {
-            check = false;
-            winner_declare(2, ctx).unwrap();
-        } else {
-            continue;
-        }
-    }
-
-    // check for diagonals
-    if grid[0][0].option == Some(true) && grid[1][1].option == Some(true) && grid[2][2].option == Some(true) {
-        check = false;
-        winner_declare(1, ctx).unwrap();
-    }
-    if grid[0][0].option == Some(false) && grid[1][1].option == Some(false) && grid[2][2].option == Some(false) {
-        check = false;
-        winner_declare(2, ctx).unwrap();
-    }
-
-    // check for draw
-    if check {
-        let mut draw_check = 0;
-        for row in grid {
-            for column in row {
-                if column.option != None {
-                    draw_check += 1;
-                }
-            }
-        }
-        if draw_check == 9 {
-            winner_declare(9, ctx).unwrap();
-        }
-    }
-}
-
-
 struct MainState {
     grid: graphics::Image,
+    exit_image: graphics::Image,
     grid_values: Vec<Vec<Cell>>,
     state: bool,
+    game_state: bool,
 }
 
 impl MainState {
     fn new(ctx: &mut Context) -> GameResult<MainState> {
         let grid = graphics::Image::new(ctx, "/grid.png")?;
+        let exit_image = graphics::Image::new(ctx, "/game_over.png")?;
         let grid_values = vec![vec![Cell::new(); 3]; 3];
 
         let s = MainState {
             grid,
+            exit_image,
             grid_values,
             state: true,
+            game_state: true,
         };
 
         Ok(s)
+    }
+
+    fn winner_declare(&mut self, winner: i32) {
+        if winner == 1 || winner == 2 {
+            println!("Winner is player {}", winner);
+        } else {
+            println!("It is a draw");
+        }
+
+        self.game_state = !self.game_state;
+    }
+
+    fn check(&mut self) {
+        let grid = &self.grid_values.clone();
+
+        let mut check = true;
+
+        // check for horizontal
+        for row in grid {
+            let mut player_one = 0;
+            let mut player_two = 0;
+            for column in row {
+                match column.option {
+                    Some(t) => {
+                        if t {
+                            player_one += 1;
+                        } else {
+                            player_two += 1;
+                        }
+                    }
+                    None => continue,
+                }
+            }
+            if player_one == 3 {
+                check = false;
+                self.winner_declare(1);
+            } else if player_two == 3 {
+                check = false;
+                self.winner_declare(2);
+            } else {
+                continue;
+            }
+        }
+
+        // check for vertical
+        for i in 0..3 {
+            let mut player_one = 0;
+            let mut player_two = 0;
+            for j in 0..3 {
+                match grid[j][i].option {
+                    Some(t) => {
+                        if t {
+                            player_one += 1;
+                        } else {
+                            player_two += 1;
+                        }
+                    }
+                    None => continue,
+                }
+            }
+            if player_one == 3 {
+                check = false;
+                self.winner_declare(1);
+            } else if player_two == 3 {
+                check = false;
+                self.winner_declare(2);
+            } else {
+                continue;
+            }
+        }
+
+        // check for diagonals
+        if grid[0][0].option == Some(true) && grid[1][1].option == Some(true) && grid[2][2].option == Some(true) {
+            check = false;
+            self.winner_declare(1);
+        }
+        if grid[0][0].option == Some(false) && grid[1][1].option == Some(false) && grid[2][2].option == Some(false) {
+            check = false;
+            self.winner_declare(2);
+        }
+
+        // check for draw
+        if check {
+            let mut draw_check = 0;
+            for row in grid {
+                for column in row {
+                    if column.option != None {
+                        draw_check += 1;
+                    }
+                }
+            }
+            if draw_check == 9 {
+                self.winner_declare(9);
+            }
+        }
     }
 }
 
@@ -183,9 +176,19 @@ impl event::EventHandler for MainState {
 
         graphics::draw(ctx, &self.grid, point(100, 0), 0.0).unwrap();
 
-        graphics::present(ctx);
+        if !self.game_state {
+            graphics::draw(ctx, &self.exit_image, point(150, 50), 0.0).unwrap();
 
-        check(self, ctx);
+            graphics::present(ctx);
+
+            std::thread::sleep(std::time::Duration::from_secs(1));
+
+            if let Err(e) = ctx.quit() {
+                println!("Error '{}' occurred in exiting from winner_declare", e);
+            }
+        }
+
+        graphics::present(ctx);
 
         Ok(())
     }
@@ -255,6 +258,8 @@ impl event::EventHandler for MainState {
                 }
             }
         }
+
+        self.check();
     }
 }
 
