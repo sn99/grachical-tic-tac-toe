@@ -1,4 +1,5 @@
 # grachical-tic-tac-toe
+[![Build Status](https://travis-ci.com/sn99/grachical-tic-tac-toe.svg?branch=master)](https://travis-ci.com/sn99/grachical-tic-tac-toe)
 
 A graphical tic-tac-toe game written in Rust and [ggez](https://crates.io/crates/ggez)
 

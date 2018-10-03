@@ -1,9 +1,9 @@
 extern crate ggez;
 
-use ggez::*;
-use ggez::graphics::{self, DrawMode, Point2};
-use ggez::event::MouseButton;
 use ggez::conf::{WindowMode, WindowSetup};
+use ggez::event::MouseButton;
+use ggez::graphics::{self, DrawMode, Point2};
+use ggez::*;
 
 #[derive(Clone)]
 struct Cell {
@@ -120,11 +120,17 @@ impl MainState {
         }
 
         // check for diagonals
-        if grid[0][0].option == Some(true) && grid[1][1].option == Some(true) && grid[2][2].option == Some(true) {
+        if grid[0][0].option == Some(true)
+            && grid[1][1].option == Some(true)
+            && grid[2][2].option == Some(true)
+            {
             check = false;
             self.winner_declare(1);
         }
-        if grid[0][0].option == Some(false) && grid[1][1].option == Some(false) && grid[2][2].option == Some(false) {
+        if grid[0][0].option == Some(false)
+            && grid[1][1].option == Some(false)
+            && grid[2][2].option == Some(false)
+            {
             check = false;
             self.winner_declare(2);
         }
@@ -163,9 +169,21 @@ impl event::EventHandler for MainState {
                 match column.option {
                     Some(t) => {
                         if t {
-                            graphics::circle(ctx, DrawMode::Fill, column.position.unwrap(), 50.0, 1.0)?;
+                            graphics::circle(
+                                ctx,
+                                DrawMode::Fill,
+                                column.position.unwrap(),
+                                50.0,
+                                1.0,
+                            )?;
                         } else {
-                            graphics::circle(ctx, DrawMode::Line(5.0), column.position.unwrap(), 50.0, 2.0)?;
+                            graphics::circle(
+                                ctx,
+                                DrawMode::Line(5.0),
+                                column.position.unwrap(),
+                                50.0,
+                                2.0,
+                            )?;
                         }
                     }
 
@@ -193,7 +211,13 @@ impl event::EventHandler for MainState {
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, _ctx: &mut Context, _button: MouseButton, x: i32, y: i32) {
+    fn mouse_button_down_event(
+        &mut self,
+        _ctx: &mut Context,
+        _button: MouseButton,
+        x: i32,
+        y: i32,
+    ) {
         if y < 200 {
             let y = 100;
             if x < 300 {
@@ -265,11 +289,7 @@ impl event::EventHandler for MainState {
 
 fn main() {
     let ctx = &mut ContextBuilder::new("tic-tac-toe", "sn99")
-        .window_setup(
-            WindowSetup::default()
-                .title("Tic Tac Toe")
-                .resizable(false),
-        )
+        .window_setup(WindowSetup::default().title("Tic Tac Toe").resizable(false))
         .window_mode(WindowMode::default())
         .build()
         .unwrap();

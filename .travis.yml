@@ -1,0 +1,19 @@
+sudo: true
+
+language: rust
+
+rust:
+- nightly
+
+os:
+- linux
+
+install:
+- sudo apt-get install libsdl2-dev
+
+before_script:
+- rustup component add rustfmt-preview
+
+script:
+- cargo fmt --all -- --check
+- cargo build -v
