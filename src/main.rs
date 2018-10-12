@@ -134,6 +134,20 @@ impl MainState {
             check = false;
             self.winner_declare(2);
         }
+        if grid[0][2].option == Some(true)
+            && grid[1][1].option == Some(true)
+            && grid[2][0].option == Some(true)
+            {
+                check = false;
+                self.winner_declare(1);
+            }
+        if grid[0][2].option == Some(false)
+            && grid[1][1].option == Some(false)
+            && grid[2][0].option == Some(false)
+            {
+                check = false;
+                self.winner_declare(2);
+            }
 
         // check for draw
         if check {
