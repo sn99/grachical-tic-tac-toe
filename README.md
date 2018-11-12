@@ -8,3 +8,9 @@ A graphical tic-tac-toe game written in Rust and [ggez](https://crates.io/crates
 2. Install [SDL2 libraries](https://github.com/Rust-SDL2/rust-sdl2#requirements)
 
 ### Use cargo run in the project dictionary to run the game
+
+![game_start](readme_resources/grid_0.png)
+
+![game](readme_resources/grid_1.png)
+
+![game_end](readme_resources/grid_2.png)
