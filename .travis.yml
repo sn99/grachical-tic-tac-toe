@@ -8,6 +8,9 @@ rust:
 os:
 - linux
 
+before_install:
+- sudo apt update
+
 install:
 - sudo apt-get install libegl1-mesa-dev libgles2-mesa-dev
 - sudo apt-get install libsdl2-dev
