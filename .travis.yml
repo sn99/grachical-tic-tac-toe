@@ -1,19 +1,27 @@
 sudo: required
 
+cache: cargo
+
 language: rust
 
 rust:
-- stable
+  - stable
+  - nightly
+  
+matrix:
+  allow_failures:
+    - rust: nightly
+fast_finish: true
 
 os:
 - linux
 
 before_install:
-- sudo apt update
-
-install:
 - sudo apt-get install libegl1-mesa-dev libgles2-mesa-dev
 - sudo apt-get install libsdl2-dev
+addons:
+  apt:
+    update: true
 
 script:
 - cargo build -v
