@@ -1,6 +1,7 @@
 # grachical-tic-tac-toe
 [![Build Status](https://travis-ci.com/sn99/grachical-tic-tac-toe.svg?branch=master)](https://travis-ci.com/sn99/grachical-tic-tac-toe)
 [![Build status](https://ci.appveyor.com/api/projects/status/yf4bq0i9rbvf9bao?svg=true)](https://ci.appveyor.com/project/sn99/grachical-tic-tac-toe)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=sn99/grachical-tic-tac-toe)](https://dependabot.com)
 
 A graphical tic-tac-toe game written in Rust and [ggez](https://crates.io/crates/ggez)
 
