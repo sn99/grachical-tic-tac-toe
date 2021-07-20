@@ -4,4 +4,4 @@ version = '0.1.0'
 authors = ["sn99"]
 
 [dependencies]
-ggez = "0.5.1"
+ggez = "0.6.0"
